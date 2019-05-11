@@ -54,6 +54,48 @@ void genSquareBuf(GLuint &vbo, GLuint &vao, GLfloat *pos, GLsizeiptr size)
     glBindVertexArray(0);
 }
 
+void genBoxBuf(GLuint &vbo, GLuint &vao, GLfloat *pos, GLsizeiptr size)
+{
+    GLuint vertexLocation = 0;
+    GLuint colorLocation = 1;
+
+    glGenBuffers(1, &vbo);                                                        GL_CHECK_ERRORS;
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);                                           GL_CHECK_ERRORS;
+    glBufferData(GL_ARRAY_BUFFER, size, 0, GL_STATIC_DRAW);                       GL_CHECK_ERRORS;
+    glBufferSubData(GL_ARRAY_BUFFER, 0, size, pos);
+
+    glGenVertexArrays(1, &vao);                                                   GL_CHECK_ERRORS;
+    glBindVertexArray(vao);                                                       GL_CHECK_ERRORS;
+
+    glEnableVertexAttribArray(vertexLocation);                                    GL_CHECK_ERRORS;
+    glVertexAttribPointer(vertexLocation, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0); 
+    glEnableVertexAttribArray(colorLocation); 
+    glVertexAttribPointer(colorLocation, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));                           GL_CHECK_ERRORS;
+
+    glBindVertexArray(0);
+}
+
+void genTriangleBuf(GLuint &vbo, GLuint &vao, GLfloat *pos, GLsizeiptr size)
+{
+    GLuint vertexLocation = 0;
+    GLuint colorLocation = 1;
+
+    glGenBuffers(1, &vbo);                                                        GL_CHECK_ERRORS;
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);                                           GL_CHECK_ERRORS;
+    glBufferData(GL_ARRAY_BUFFER, size, 0, GL_STATIC_DRAW);                       GL_CHECK_ERRORS;
+    glBufferSubData(GL_ARRAY_BUFFER, 0, size, pos);
+
+    glGenVertexArrays(1, &vao);                                                   GL_CHECK_ERRORS;
+    glBindVertexArray(vao);                                                       GL_CHECK_ERRORS;
+
+    glEnableVertexAttribArray(vertexLocation);                                    GL_CHECK_ERRORS;
+    glVertexAttribPointer(vertexLocation, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0); 
+    glEnableVertexAttribArray(colorLocation); 
+    glVertexAttribPointer(colorLocation, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));                           GL_CHECK_ERRORS;
+
+    glBindVertexArray(0);
+}
+
 
 int main(int argc, char** argv)
 {
@@ -98,6 +140,13 @@ int main(int argc, char** argv)
     //Создаем и загружаем геометрию поверхности
     //
 
+    GLfloat trianglePos[] = 
+    {
+        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,// Left  
+         0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,// Right 
+         0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f,// Top   
+    };
+
     GLfloat squarePos[] =
     {
         // 1 Красно-зеленый
@@ -106,19 +155,63 @@ int main(int argc, char** argv)
         0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,// Нижний правый угол
         -0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 
         // Второй треугольник
-        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,// Нижний правый угол
-        -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,  // Нижний левый угол
-        -0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // Верхний левый угол
-
-        // 2 Красно-синий
-        // Первый треугольник
-        0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f,  // Верхний правый угол
         0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,// Нижний правый угол
-        -0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 
+        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,  // Нижний левый угол
+        -0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // Верхний левый угол
+
+        // 1 Красно-зеленый
+        // Первый треугольник
+        0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f,  // Верхний правый угол
+        0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,// Нижний правый угол
+        -0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 
         // Второй треугольник
         0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,// Нижний правый угол
         -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,  // Нижний левый угол
         -0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, // Верхний левый угол
+
+        // 1 Красно-зеленый
+        // Первый треугольник
+        0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f,  // Верхний правый угол
+        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,// Нижний правый угол
+        -0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 
+        // Второй треугольник
+        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,// Нижний правый угол
+        -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,  // Нижний левый угол
+        -0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // Верхний левый угол
+
+        // 1 Красно-зеленый
+        // Первый треугольник
+        0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f,  // Верхний правый угол
+        0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f,// Нижний правый угол
+        -0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 
+        // Второй треугольник
+        0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f,// Нижний правый угол
+        -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f,  // Нижний левый угол
+        -0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, // Верхний левый угол
+
+
+        // 1 Красно-зеленый
+        // Первый треугольник
+        0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 1.0f,  // Верхний правый угол
+        0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f,// Нижний правый угол
+        -0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 
+        // Второй треугольник
+        0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f,// Нижний правый угол
+        -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f,  // Нижний левый угол
+        -0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 1.0f, // Верхний левый угол
+
+
+        // 1 Красно-зеленый
+        // Первый треугольник
+        0.5f,  0.5f, 0.0f, 1.0f, 0.6275f, 0.0f,  // Верхний правый угол
+        0.5f, -0.5f, 0.0f, 1.0f, 0.6275f, 0.0f,// Нижний правый угол
+        -0.5f,  0.5f, 0.0f, 1.0f, 0.6275f, 0.0f,
+        // Второй треугольник
+        0.5f, -0.5f, 0.0f, 1.0f, 0.6275f, 0.0f,// Нижний правый угол
+        -0.5f, -0.5f, 0.0f, 1.0f, 0.6275f, 0.0f,  // Нижний левый угол
+        -0.5f,  0.5f, 0.0f, 1.0f, 0.6275f, 0.0f, // Верхний левый угол
+
+
     };
 
     GLfloat boxPos[] =
@@ -151,12 +244,12 @@ int main(int argc, char** argv)
         0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 0.0f,
         0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 0.0f,
 
-        -0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
-        0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
-        0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 0.0f,
-        0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 1.0f,
+        0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 1.0f,
+        0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 1.0f,
+        0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 1.0f,
 
         -0.5f,  0.5f, -0.5f,  1.0f, 0.6275f, 0.0f,
         0.5f,  0.5f, -0.5f,  1.0f, 0.6275f, 0.0f,
@@ -166,9 +259,21 @@ int main(int argc, char** argv)
         -0.5f,  0.5f, -0.5f,  1.0f, 0.6275f, 0.0f,
     };
 
+
+    glEnable(GL_DEPTH_TEST);
     GLuint squareVBO;
     GLuint squareVAO;
     genSquareBuf(squareVBO, squareVAO, squarePos, sizeof(squarePos));
+
+    GLuint boxVBO;
+    GLuint boxVAO;
+    genBoxBuf(boxVBO, boxVAO, boxPos, sizeof(boxPos));
+
+    GLuint triangleVBO;
+    GLuint triangleVAO;
+    genBoxBuf(triangleVBO, triangleVAO, trianglePos, sizeof(trianglePos));
+
+
     /*GLuint g_vertexBufferObject;
     GLuint g_vertexArrayObject;
     {
@@ -193,7 +298,6 @@ int main(int argc, char** argv)
         glBindVertexArray(0);
     }*/
 
-
     //цикл обработки сообщений и отрисовки сцены каждый кадр
     while (!glfwWindowShouldClose(window))
     {
@@ -215,32 +319,55 @@ int main(int argc, char** argv)
 
         // draw call
         //
-        glBindVertexArray(squareVAO); GL_CHECK_ERRORS;
-        
-        GLfloat cur_time = glfwGetTime();
-        
         glm::mat4 view(1.0f);
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -8.0f));
+        view = glm::rotate(view, glm::radians(20.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
         glm::mat4 projection(1.0f);
         projection = glm::perspective(45.0f, ((GLfloat) WIDTH) / HEIGHT, 0.1f, 100.0f);
 
         glm::mat4 model(1.0f);
 
+        glBindVertexArray(squareVAO);                                            GL_CHECK_ERRORS;
+        
+        GLfloat cur_time = glfwGetTime();
+
         program.SetUniform("g_view", view);
         program.SetUniform("g_projection", projection);
 
-        
-        model = glm::translate(model, glm::vec3(cur_time * 0.3f, 0.0f, 0.0f));
-        model = glm::rotate(model, (GLfloat) cur_time * 2.0f, glm::vec3(0.0f, 0.0f, 1.0f));
-        program.SetUniform("g_model", model);
-        glDrawArrays(GL_TRIANGLES, 0, 6);       GL_CHECK_ERRORS;  // The last parameter of glDrawArrays is equal to VS invocations
+        for (int i = 0; i < 6; i++) {
+            model = glm::mat4(1.0f);
+            model = glm::rotate(model, glm::radians(60.0f * i) + glm::radians(cur_time) * 100.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+            model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
+            model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+            model = glm::rotate(model, -glm::radians(cur_time) * 180.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+            model = glm::scale(model, glm::vec3(0.75, 0.75, 0.75));
+            program.SetUniform("g_model", model);
+            glDrawArrays(GL_TRIANGLES, 6 * i, 6 * (i + 1));
+        }
+
+        glBindVertexArray(boxVAO);
 
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(-cur_time * 0.3f, 0.0f, 0.0f));
-        model = glm::rotate(model, (GLfloat) cur_time * -2.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+        model = glm::rotate(model, (GLfloat) glm::radians(cur_time) * 50.0f, glm::vec3(1.0f, 1.0f, 1.0f));
         program.SetUniform("g_model", model);
-        glDrawArrays(GL_TRIANGLES, 6, 12);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        glBindVertexArray(triangleVAO);
+
+        for (int i = 0; i < 6; i++) {
+            model = glm::mat4(1.0f);
+            model = glm::rotate(model, glm::radians(30.0f) + glm::radians(60.0f * i) - glm::radians(cur_time) * 100.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+            model = glm::translate(model, glm::vec3(3.5f, 0.0f, 0.0f));
+            model = glm::rotate(model, glm::radians(60.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+            model = glm::rotate(model, glm::radians(cur_time) * 180.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+            model = glm::scale(model, glm::vec3(0.75, 0.75, 0.75));
+            program.SetUniform("g_model", model);
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+        }
+
+        program.SetUniform("g_model", model);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
 
         program.StopUseShader();
         glBindVertexArray(0);
@@ -251,6 +378,12 @@ int main(int argc, char** argv)
   //
     glDeleteVertexArrays(1, &squareVAO);
     glDeleteBuffers(1,      &squareVBO);
+
+    glDeleteVertexArrays(1, &boxVAO);
+    glDeleteBuffers(1,      &boxVBO);
+
+    glDeleteVertexArrays(1, &triangleVAO);
+    glDeleteBuffers(1,      &triangleVBO);
 
     glfwTerminate();
     return 0;
