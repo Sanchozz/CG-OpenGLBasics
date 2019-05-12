@@ -18,6 +18,8 @@
 
 static const GLsizei WIDTH = 640, HEIGHT = 480; //размеры окна
 
+int curScene = 2;
+
 int initGL()
 {
     int res = 0;
@@ -92,10 +94,11 @@ void drawScene(GLFWwindow *window, ShaderProgram &program, ShaderProgram &progra
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
         program_texture.StopUseShader();
+}
 
-        
+void drawScene2(GLFWwindow *window, ShaderProgram &program, ShaderProgram &program_texture, glm::mat4 view, glm::mat4 projection, GLuint texture)
+{
 
-        
 }
 
 void drawMirror(GLFWwindow *window, ShaderProgram &program, glm::mat4 view, glm::mat4 projection, bool isColored)
@@ -184,6 +187,11 @@ int main(int argc, char** argv)
     shaders_texture[GL_FRAGMENT_SHADER] = "fragment_texture.glsl";
     ShaderProgram program_texture(shaders_texture); GL_CHECK_ERRORS;
 
+    std::unordered_map<GLenum, std::string> shaders_skybox;
+    shaders_skybox[GL_VERTEX_SHADER] = "vertex_skybox.glsl";
+    shaders_skybox[GL_FRAGMENT_SHADER] = "fragment_skybox.glsl";
+    ShaderProgram program_skybox(shaders_skybox); GL_CHECK_ERRORS;
+
     glfwSwapInterval(1); // force 60 frames per second
   
     //Создаем и загружаем геометрию поверхности
@@ -212,6 +220,9 @@ int main(int argc, char** argv)
     genBoxBuf(boxVBO, boxVAO, boxPos, sizeof(boxPos));
     genTriangleBuf(triangleVBO, triangleVAO, trianglePos, sizeof(trianglePos));
     genMirrorBuf(mirrorVBO, mirrorVAO, mirrorSquarePos, sizeof(mirrorSquarePos));GL_CHECK_ERRORS;
+    genSkyboxBuf(skyboxVBO, skyboxVAO, skyboxVertices, sizeof(skyboxVertices));GL_CHECK_ERRORS;
+
+    unsigned int cubemapTexture = loadCubemap(faces);
 
     glEnable(GL_DEPTH_TEST);
     //цикл обработки сообщений и отрисовки сцены каждый кадр
@@ -219,34 +230,68 @@ int main(int argc, char** argv)
     {
         glfwPollEvents();
 
-        glm::mat4 model(1.0f);
+        if (curScene == 1) {
+            glm::mat4 model(1.0f);
 
-        glm::mat4 view(1.0f);
-        view = glm::translate(view, glm::vec3(0.0f, -0.5f, -8.0f));
-        view = glm::rotate(view, glm::radians(35.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+            glm::mat4 view(1.0f);
+            view = glm::translate(view, glm::vec3(0.0f, -0.5f, -8.0f));
+            view = glm::rotate(view, glm::radians(35.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
-        glm::mat4 ref(1.0f);
-        ref[1][1] = -1.0f;
+            glm::mat4 ref(1.0f);
+            ref[1][1] = -1.0f;
 
-        glm::mat4 reflected_view = view * ref;
+            glm::mat4 reflected_view = view * ref;
 
-        glm::mat4 projection(1.0f);
-        projection = glm::perspective(45.0f, ((GLfloat) WIDTH) / HEIGHT, 0.1f, 100.0f);
-        
-        
-        glEnable(GL_STENCIL_TEST);
-        drawMirror(window, program_mirror, view, projection, false);GL_CHECK_ERRORS;
-        drawScene(window, program, program_texture, reflected_view, projection, ricardoTexture);GL_CHECK_ERRORS;
-        glDisable(GL_STENCIL_TEST);
+            glm::mat4 projection(1.0f);
+            projection = glm::perspective(45.0f, ((GLfloat) WIDTH) / HEIGHT, 0.1f, 100.0f);
+            
+            
+            glEnable(GL_STENCIL_TEST);
+            drawMirror(window, program_mirror, view, projection, false);GL_CHECK_ERRORS;
+            drawScene(window, program, program_texture, reflected_view, projection, ricardoTexture);GL_CHECK_ERRORS;
+            glDisable(GL_STENCIL_TEST);
 
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);GL_CHECK_ERRORS;
-        drawMirror(window, program_mirror, view, projection, true);GL_CHECK_ERRORS;
-        glDisable(GL_BLEND);GL_CHECK_ERRORS;
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);GL_CHECK_ERRORS;
+            drawMirror(window, program_mirror, view, projection, true);GL_CHECK_ERRORS;
+            glDisable(GL_BLEND);GL_CHECK_ERRORS;
 
-        drawScene(window, program, program_texture, view, projection, ricardoTexture);
-        
-        glBindVertexArray(0);
+            drawScene(window, program, program_texture, view, projection, ricardoTexture);
+            
+            glBindVertexArray(0);
+        } else if (curScene == 2) {
+
+            int width, height;
+            glfwGetFramebufferSize(window, &width, &height);
+            glViewport(0, 0, width, height);
+            glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+            glClear     (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+            glDepthMask(GL_FALSE);
+            
+            program_skybox.StartUseShader();
+
+            
+            glm::mat4 model(1.0f);
+
+            glm::mat4 view(1.0f);
+            //view = glm::translate(view, glm::vec3(0.0f, -0.5f, -8.0f));
+            //view = glm::rotate(view, glm::radians(35.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+            //view = glm::mat4(glm::mat3(view));
+
+            
+            glm::mat4 projection(1.0f);
+            projection = glm::perspective(45.0f, ((GLfloat) WIDTH) / HEIGHT, 0.1f, 100.0f);
+            glBindVertexArray(skyboxVAO);
+            glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+            program_skybox.SetUniform("g_model", model);
+            program_skybox.SetUniform("g_view", view);
+            program_skybox.SetUniform("g_projection", projection);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            
+            program_skybox.StopUseShader();
+            glDepthMask(GL_TRUE);
+            glBindVertexArray(0);
+        }
         glfwSwapBuffers(window); 
     }
 
