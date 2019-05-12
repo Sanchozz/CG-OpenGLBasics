@@ -11,11 +11,13 @@ set(SOURCE_FILES
     main.cpp
     ShaderProgram.h
     ShaderProgram.cpp
-    buffer.h)
+    buffer.h
+    texture.h)
 
 set(ADDITIONAL_INCLUDE_DIRS
         dependencies/include/GLAD
-	dependencies/include/glm)
+	dependencies/include/glm
+    dependencies/include/stb_image)
 set(ADDITIONAL_LIBRARY_DIRS
         dependencies/lib)   
 set(ADDITIONAL_RUNTIME_LIBRARY_DIRS

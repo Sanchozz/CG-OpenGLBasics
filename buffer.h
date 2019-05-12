@@ -38,16 +38,16 @@ GLfloat mirrorSquarePos[] =
     {
         // 1 Красно-зеленый
         // Первый треугольник
-        0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f,  // Верхний правый угол
-        0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,// Нижний правый угол
-        -0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 
+        0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f,   // Верхний правый угол
+        0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // Нижний правый угол
+        -0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
         // Второй треугольник
-        0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,// Нижний правый угол
-        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,  // Нижний левый угол
+        0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // Нижний правый угол
+        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,   // Нижний левый угол
         -0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // Верхний левый угол
 
-        // 1 Красно-зеленый
-        // Первый треугольник
+        //1 Красно-зеленый
+        //Первый треугольник
         0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f,  // Верхний правый угол
         0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,// Нижний правый угол
         -0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 
@@ -103,53 +103,54 @@ GLfloat mirrorSquarePos[] =
 
     GLfloat boxPos[] =
     {
-        -0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-        0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f ,0.0f, 1.0f,
+        0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f , 1.0f, 1.0f,
+        0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f , 1.0f, 0.0f,
+        0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f , 1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f ,0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
 
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f,
-        0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f,
-        0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f,
-        0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f,0.0f, 1.0f,
+        0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+        0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+        0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f,0.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f,0.0f, 1.0f,
 
-        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 1.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f,0.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f,1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f,1.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f,1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 1.0f, 0.0f,0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f,0.0f, 1.0f,
 
-        0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 0.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
-        0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
-        0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
-        0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 0.0f,
+        0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 0.0f,0.0f, 1.0f,
+        0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f,1.0f, 1.0f,
+        0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.0f,1.0f, 0.0f,
+        0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.0f,1.0f, 0.0f,
+        0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 0.0f,0.0f, 0.0f,
+        0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 0.0f,0.0f, 1.0f,
 
-        -0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 1.0f,
-        0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 1.0f,
-        0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 1.0f,0.0f, 1.0f,
+        0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+        0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+        0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 1.0f,0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 1.0f,0.0f, 1.0f,
 
-        -0.5f,  0.5f, -0.5f,  1.0f, 0.6275f, 0.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 0.6275f, 0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 0.6275f, 0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 0.6275f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.6275f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  1.0f, 0.6275f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f, 0.6275f, 0.0f,0.0f, 1.0f,
+        0.5f,  0.5f, -0.5f,  1.0f, 0.6275f, 0.0f, 1.0f, 1.0f,
+        0.5f,  0.5f,  0.5f,  1.0f, 0.6275f, 0.0f, 1.0f, 0.0f,
+        0.5f,  0.5f,  0.5f,  1.0f, 0.6275f, 0.0f, 1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.6275f, 0.0f,0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f, 0.6275f, 0.0f,0.0f, 1.0f,
     };
 
 void genSquareBuf(GLuint &vbo, GLuint &vao, GLfloat *pos, GLsizeiptr size)
 {
     GLuint vertexLocation = 0;
     GLuint colorLocation = 1;
+    GLuint textureLocation = 2;
 
     glGenBuffers(1, &vbo);                                                        GL_CHECK_ERRORS;
     glBindBuffer(GL_ARRAY_BUFFER, vbo);                                           GL_CHECK_ERRORS;
@@ -160,10 +161,15 @@ void genSquareBuf(GLuint &vbo, GLuint &vao, GLfloat *pos, GLsizeiptr size)
     glBindVertexArray(vao);                                                        GL_CHECK_ERRORS;
 
     // glBindBuffer(GL_ARRAY_BUFFER, g_vertexBufferObject);                                           GL_CHECK_ERRORS;
-    glEnableVertexAttribArray(vertexLocation);                                                     GL_CHECK_ERRORS;
+    
     glVertexAttribPointer(vertexLocation, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0); 
-    glEnableVertexAttribArray(colorLocation); 
-    glVertexAttribPointer(colorLocation, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));                           GL_CHECK_ERRORS;
+    glEnableVertexAttribArray(vertexLocation);                                                     GL_CHECK_ERRORS;
+    
+    glVertexAttribPointer(colorLocation, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));  
+    glEnableVertexAttribArray(colorLocation);                          GL_CHECK_ERRORS;
+    
+    //glVertexAttribPointer(textureLocation, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));   
+    //glEnableVertexAttribArray(textureLocation); 
 
     glBindVertexArray(0);
 }
@@ -192,6 +198,7 @@ void genBoxBuf(GLuint &vbo, GLuint &vao, GLfloat *pos, GLsizeiptr size)
 {
     GLuint vertexLocation = 0;
     GLuint colorLocation = 1;
+    GLuint textureLocation = 2;
 
     glGenBuffers(1, &vbo);                                                        GL_CHECK_ERRORS;
     glBindBuffer(GL_ARRAY_BUFFER, vbo);                                           GL_CHECK_ERRORS;
@@ -201,10 +208,12 @@ void genBoxBuf(GLuint &vbo, GLuint &vao, GLfloat *pos, GLsizeiptr size)
     glGenVertexArrays(1, &vao);                                                   GL_CHECK_ERRORS;
     glBindVertexArray(vao);                                                       GL_CHECK_ERRORS;
 
-    glEnableVertexAttribArray(vertexLocation);                                    GL_CHECK_ERRORS;
-    glVertexAttribPointer(vertexLocation, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0); 
+    glVertexAttribPointer(vertexLocation, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0); 
+    glEnableVertexAttribArray(vertexLocation);  
+    glVertexAttribPointer(colorLocation, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));       GL_CHECK_ERRORS;
     glEnableVertexAttribArray(colorLocation); 
-    glVertexAttribPointer(colorLocation, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));                           GL_CHECK_ERRORS;
+    glVertexAttribPointer(textureLocation, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));   
+    glEnableVertexAttribArray(textureLocation); 
 
     glBindVertexArray(0);
 }
