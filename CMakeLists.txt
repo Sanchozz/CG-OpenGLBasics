@@ -10,7 +10,8 @@ set(SOURCE_FILES
     glad.c
     main.cpp
     ShaderProgram.h
-    ShaderProgram.cpp)
+    ShaderProgram.cpp
+    buffer.h)
 
 set(ADDITIONAL_INCLUDE_DIRS
         dependencies/include/GLAD

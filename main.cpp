@@ -1,6 +1,7 @@
 //internal includes
 #include "common.h"
 #include "ShaderProgram.h"
+#include "buffer.h"
 
 //External dependencies
 #define GLFW_DLL
@@ -13,15 +14,6 @@
 #include <gtc/type_ptr.hpp>
 
 static const GLsizei WIDTH = 640, HEIGHT = 480; //размеры окна
-
-GLuint squareVBO;
-GLuint squareVAO;
-GLuint boxVBO;
-GLuint boxVAO;
-GLuint triangleVBO;
-GLuint triangleVAO;
-GLuint mirrorVBO;
-GLuint mirrorVAO;
 
 int initGL()
 {
@@ -41,80 +33,13 @@ int initGL()
     return 0;
 }
 
-void genSquareBuf(GLuint &vbo, GLuint &vao, GLfloat *pos, GLsizeiptr size)
-{
-    GLuint vertexLocation = 0;
-    GLuint colorLocation = 1;
-
-    glGenBuffers(1, &vbo);                                                        GL_CHECK_ERRORS;
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);                                           GL_CHECK_ERRORS;
-    glBufferData(GL_ARRAY_BUFFER, size, 0, GL_STATIC_DRAW); GL_CHECK_ERRORS;
-    glBufferSubData(GL_ARRAY_BUFFER, 0, size, pos);
-
-    glGenVertexArrays(1, &vao);                                                    GL_CHECK_ERRORS;
-    glBindVertexArray(vao);                                                        GL_CHECK_ERRORS;
-
-    // glBindBuffer(GL_ARRAY_BUFFER, g_vertexBufferObject);                                           GL_CHECK_ERRORS;
-    glEnableVertexAttribArray(vertexLocation);                                                     GL_CHECK_ERRORS;
-    glVertexAttribPointer(vertexLocation, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0); 
-    glEnableVertexAttribArray(colorLocation); 
-    glVertexAttribPointer(colorLocation, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));                           GL_CHECK_ERRORS;
-
-    glBindVertexArray(0);
-}
-
-void genBoxBuf(GLuint &vbo, GLuint &vao, GLfloat *pos, GLsizeiptr size)
-{
-    GLuint vertexLocation = 0;
-    GLuint colorLocation = 1;
-
-    glGenBuffers(1, &vbo);                                                        GL_CHECK_ERRORS;
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);                                           GL_CHECK_ERRORS;
-    glBufferData(GL_ARRAY_BUFFER, size, 0, GL_STATIC_DRAW);                       GL_CHECK_ERRORS;
-    glBufferSubData(GL_ARRAY_BUFFER, 0, size, pos);
-
-    glGenVertexArrays(1, &vao);                                                   GL_CHECK_ERRORS;
-    glBindVertexArray(vao);                                                       GL_CHECK_ERRORS;
-
-    glEnableVertexAttribArray(vertexLocation);                                    GL_CHECK_ERRORS;
-    glVertexAttribPointer(vertexLocation, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0); 
-    glEnableVertexAttribArray(colorLocation); 
-    glVertexAttribPointer(colorLocation, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));                           GL_CHECK_ERRORS;
-
-    glBindVertexArray(0);
-}
-
-void genTriangleBuf(GLuint &vbo, GLuint &vao, GLfloat *pos, GLsizeiptr size)
-{
-    GLuint vertexLocation = 0;
-    GLuint colorLocation = 1;
-
-    glGenBuffers(1, &vbo);                                                        GL_CHECK_ERRORS;
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);                                           GL_CHECK_ERRORS;
-    glBufferData(GL_ARRAY_BUFFER, size, 0, GL_STATIC_DRAW);                       GL_CHECK_ERRORS;
-    glBufferSubData(GL_ARRAY_BUFFER, 0, size, pos);
-
-    glGenVertexArrays(1, &vao);                                                   GL_CHECK_ERRORS;
-    glBindVertexArray(vao);                                                       GL_CHECK_ERRORS;
-
-    glEnableVertexAttribArray(vertexLocation);                                    GL_CHECK_ERRORS;
-    glVertexAttribPointer(vertexLocation, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0); 
-    glEnableVertexAttribArray(colorLocation); 
-    glVertexAttribPointer(colorLocation, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));                           GL_CHECK_ERRORS;
-
-    glBindVertexArray(0);
-}
-
-void drawScene(GLFWwindow *window, ShaderProgram &program, glm::mat4 view, glm::mat4 projection, bool isReflect)
+void drawScene(GLFWwindow *window, ShaderProgram &program, glm::mat4 view, glm::mat4 projection)
 {
     glm::mat4 model(1.0f);
     program.StartUseShader();                           GL_CHECK_ERRORS;
 
         // очистка и заполнение экрана цветом
         //
-        if (isReflect) {
-            
-        }
 
         // draw call
         //
@@ -164,7 +89,7 @@ void drawScene(GLFWwindow *window, ShaderProgram &program, glm::mat4 view, glm::
         program.StopUseShader();
 }
 
-void drawMirror(GLFWwindow *window, ShaderProgram &program, glm::mat4 view, glm::mat4 projection)
+/*void drawMirror(GLFWwindow *window, ShaderProgram &program, glm::mat4 view, glm::mat4 projection)
 {
     glm::mat4 model(1.0f);
     program.StartUseShader();
@@ -176,16 +101,54 @@ void drawMirror(GLFWwindow *window, ShaderProgram &program, glm::mat4 view, glm:
         glClear     (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
         glClearDepth(0.0); 
-        glDepthFunc(GL_ALWAYS);
-        glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+        glClear(GL_DEPTH_BUFFER_BIT);
+        //glDepthFunc(GL_ALWAYS);
+        //glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
         glBindVertexArray(mirrorVAO);
-        model = glm::scale(model, glm::vec3(2.0f, 2.0f, 2.0f));
+        model = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
         program.SetUniform("g_view", view);
         program.SetUniform("g_projection", projection);
         program.SetUniform("g_model", model);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glDepthFunc(GL_LESS);
-        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+        //glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+    program.StopUseShader();
+}*/
+
+void drawMirror(GLFWwindow *window, ShaderProgram &program, glm::mat4 view, glm::mat4 projection, bool isColored)
+{
+    glm::mat4 model;
+    program.StartUseShader();
+        if (!isColored) {
+            int width, height;
+            glfwGetFramebufferSize(window, &width, &height);
+            glViewport(0, 0, width, height);
+            glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+            glClear     (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+            glDisable(GL_DEPTH_TEST);
+            glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+
+            glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
+            glStencilFunc(GL_ALWAYS, 1, 0xffffffff);
+        }
+
+        glBindVertexArray(mirrorVAO);
+        model = glm::mat4(1.0f);GL_CHECK_ERRORS;
+        model = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
+        program.SetUniform("g_view", view);
+        program.SetUniform("g_projection", projection);
+        program.SetUniform("g_model", model);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        if (!isColored) {
+            glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+            glEnable(GL_DEPTH_TEST);
+
+            glStencilFunc(GL_EQUAL, 1, 0xffffffff);  /* draw if stencil ==1 */
+            glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+        }
+
     program.StopUseShader();
 }
 
@@ -238,144 +201,13 @@ int main(int argc, char** argv)
     //Создаем и загружаем геометрию поверхности
     //
 
-    GLfloat mirrorSquarePos[] = 
-    {
-        // Первый треугольник
-        0.5f,  0.0f, 0.5f, 1.0f, 1.0f, 1.0f,  // Верхний правый угол
-        0.5f, 0.0f, -0.5f, 1.0f, 1.0f, 1.0f,// Нижний правый угол
-        -0.5f,  0.0f, 0.5f, 1.0f, 1.0f, 1.0f, 
-        // Второй треугольник
-        0.5f, 0.0f, -0.5f, 1.0f, 1.0f, 1.0f,// Нижний правый угол
-        -0.5f, 0.0f, -0.5f, 1.0f, 1.0f, 1.0f,  // Нижний левый угол
-        -0.5f,  0.0f, 0.5f, 1.0f, 1.0f, 1.0f,// Верхний левый угол
-    };
-
-    GLfloat trianglePos[] = 
-    {
-        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,// Left  
-         0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,// Right 
-         0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f,// Top   
-    };
-
-    GLfloat squarePos[] =
-    {
-        // 1 Красно-зеленый
-        // Первый треугольник
-        0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f,  // Верхний правый угол
-        0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,// Нижний правый угол
-        -0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 
-        // Второй треугольник
-        0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,// Нижний правый угол
-        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,  // Нижний левый угол
-        -0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // Верхний левый угол
-
-        // 1 Красно-зеленый
-        // Первый треугольник
-        0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f,  // Верхний правый угол
-        0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,// Нижний правый угол
-        -0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 
-        // Второй треугольник
-        0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,// Нижний правый угол
-        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,  // Нижний левый угол
-        -0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, // Верхний левый угол
-
-        // 1 Красно-зеленый
-        // Первый треугольник
-        0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f,  // Верхний правый угол
-        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,// Нижний правый угол
-        -0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 
-        // Второй треугольник
-        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,// Нижний правый угол
-        -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,  // Нижний левый угол
-        -0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // Верхний левый угол
-
-        // 1 Красно-зеленый
-        // Первый треугольник
-        0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f,  // Верхний правый угол
-        0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f,// Нижний правый угол
-        -0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 
-        // Второй треугольник
-        0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f,// Нижний правый угол
-        -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f,  // Нижний левый угол
-        -0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, // Верхний левый угол
-
-
-        // 1 Красно-зеленый
-        // Первый треугольник
-        0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 1.0f,  // Верхний правый угол
-        0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f,// Нижний правый угол
-        -0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 
-        // Второй треугольник
-        0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f,// Нижний правый угол
-        -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f,  // Нижний левый угол
-        -0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 1.0f, // Верхний левый угол
-
-
-        // 1 Красно-зеленый
-        // Первый треугольник
-        0.5f,  0.5f, 0.0f, 1.0f, 0.6275f, 0.0f,  // Верхний правый угол
-        0.5f, -0.5f, 0.0f, 1.0f, 0.6275f, 0.0f,// Нижний правый угол
-        -0.5f,  0.5f, 0.0f, 1.0f, 0.6275f, 0.0f,
-        // Второй треугольник
-        0.5f, -0.5f, 0.0f, 1.0f, 0.6275f, 0.0f,// Нижний правый угол
-        -0.5f, -0.5f, 0.0f, 1.0f, 0.6275f, 0.0f,  // Нижний левый угол
-        -0.5f,  0.5f, 0.0f, 1.0f, 0.6275f, 0.0f, // Верхний левый угол
-
-
-    };
-
-    GLfloat boxPos[] =
-    {
-        -0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-        0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f,
-        0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f,
-        0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f,
-        0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f,
-
-        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 1.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f,
-
-        0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 0.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
-        0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
-        0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
-        0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 0.0f,
-
-        -0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 1.0f,
-        0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 1.0f,
-        0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 1.0f,
-
-        -0.5f,  0.5f, -0.5f,  1.0f, 0.6275f, 0.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 0.6275f, 0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 0.6275f, 0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 0.6275f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.6275f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  1.0f, 0.6275f, 0.0f,
-    };
-
 
     glEnable(GL_DEPTH_TEST);
 
     genSquareBuf(squareVBO, squareVAO, squarePos, sizeof(squarePos));
     genBoxBuf(boxVBO, boxVAO, boxPos, sizeof(boxPos));
     genBoxBuf(triangleVBO, triangleVAO, trianglePos, sizeof(trianglePos));
-    genSquareBuf(mirrorVBO, mirrorVAO, mirrorSquarePos, sizeof(mirrorSquarePos));
+    genMirrorBuf(mirrorVBO, mirrorVAO, mirrorSquarePos, sizeof(mirrorSquarePos));GL_CHECK_ERRORS;
 
 
     //цикл обработки сообщений и отрисовки сцены каждый кадр
@@ -383,14 +215,11 @@ int main(int argc, char** argv)
     {
         glfwPollEvents();
 
-        //очищаем экран каждый кадр
-        //glClearColor(0.1f, 0.1f, 0.1f, 1.0f);               GL_CHECK_ERRORS;
-        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); GL_CHECK_ERRORS;
         glm::mat4 model(1.0f);
 
         glm::mat4 view(1.0f);
         view = glm::translate(view, glm::vec3(0.0f, 0.0f, -8.0f));
-        view = glm::rotate(view, glm::radians(20.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        view = glm::rotate(view, glm::radians(35.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
         glm::mat4 ref(1.0f);
         ref[1][1] = -1.0f;
@@ -399,12 +228,19 @@ int main(int argc, char** argv)
 
         glm::mat4 projection(1.0f);
         projection = glm::perspective(45.0f, ((GLfloat) WIDTH) / HEIGHT, 0.1f, 100.0f);
-
-        drawMirror(window, program_mirror, view, projection);
-        drawScene(window, program, reflected_view, projection, true);
-        glClearDepth(1.0f);
-        drawScene(window, program, view, projection, false);
         
+        
+        glEnable(GL_STENCIL_TEST);
+        drawMirror(window, program_mirror, view, projection, false);GL_CHECK_ERRORS;
+        drawScene(window, program, reflected_view, projection);GL_CHECK_ERRORS;
+        glDisable(GL_STENCIL_TEST);
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);GL_CHECK_ERRORS;
+        drawMirror(window, program_mirror, view, projection, true);GL_CHECK_ERRORS;
+        glDisable(GL_BLEND);GL_CHECK_ERRORS;
+
+        drawScene(window, program, view, projection);
         
         glBindVertexArray(0);
         glfwSwapBuffers(window); 
@@ -412,17 +248,7 @@ int main(int argc, char** argv)
 
     //очищаем vboи vao перед закрытием программы
   //
-    glDeleteVertexArrays(1, &squareVAO);
-    glDeleteBuffers(1,      &squareVBO);
-
-    glDeleteVertexArrays(1, &boxVAO);
-    glDeleteBuffers(1,      &boxVBO);
-
-    glDeleteVertexArrays(1, &triangleVAO);
-    glDeleteBuffers(1,      &triangleVBO);
-
-    glDeleteVertexArrays(1, &mirrorVAO);
-    glDeleteBuffers(1,      &mirrorVBO);
+    cleanBuffers();
 
     glfwTerminate();
     return 0;
