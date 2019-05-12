@@ -18,7 +18,7 @@
 
 static const GLsizei WIDTH = 640, HEIGHT = 480; //размеры окна
 
-int curScene = 2;
+int curScene = 1;
 
 int initGL()
 {
