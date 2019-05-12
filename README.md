@@ -1,2 +1,2 @@
-# CG-RayMarching2
+# CG-OpenGLBasics
 HW2
