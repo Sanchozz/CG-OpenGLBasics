@@ -113,11 +113,7 @@ void drawScene(GLFWwindow *window, ShaderProgram &program, glm::mat4 view, glm::
         // очистка и заполнение экрана цветом
         //
         if (isReflect) {
-            int width, height;
-            glfwGetFramebufferSize(window, &width, &height);
-            glViewport(0, 0, width, height);
-            glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-            glClear     (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+            
         }
 
         // draw call
@@ -172,14 +168,24 @@ void drawMirror(GLFWwindow *window, ShaderProgram &program, glm::mat4 view, glm:
 {
     glm::mat4 model(1.0f);
     program.StartUseShader();
-        glClearDepth(1.0); 
+    
+        int width, height;
+        glfwGetFramebufferSize(window, &width, &height);
+        glViewport(0, 0, width, height);
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        glClear     (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+        glClearDepth(0.0); 
         glDepthFunc(GL_ALWAYS);
+        glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
         glBindVertexArray(mirrorVAO);
+        model = glm::scale(model, glm::vec3(2.0f, 2.0f, 2.0f));
         program.SetUniform("g_view", view);
         program.SetUniform("g_projection", projection);
         program.SetUniform("g_model", model);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glDepthFunc(GL_LESS);
+        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
     program.StopUseShader();
 }
 
@@ -396,7 +402,7 @@ int main(int argc, char** argv)
 
         drawMirror(window, program_mirror, view, projection);
         drawScene(window, program, reflected_view, projection, true);
-        glClearDepth(0.0f);
+        glClearDepth(1.0f);
         drawScene(window, program, view, projection, false);
         
         

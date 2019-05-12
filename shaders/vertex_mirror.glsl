@@ -12,6 +12,6 @@ out vec3 outColor;
 void main(void)
 {
     gl_Position  = g_projection * g_view * g_model * vec4(coord,1.0);
-    gl_Position.z = 0.0f;
+    gl_Position.z = 1.0f;
     outColor = color;
 }
