@@ -16,6 +16,8 @@ GLuint mirrorVBO;
 GLuint mirrorVAO;
 GLuint skyboxVBO;
 GLuint skyboxVAO;
+GLuint tetraVBO;
+GLuint tetraVAO;
 
 GLfloat mirrorSquarePos[] = 
     {
@@ -33,7 +35,11 @@ GLfloat mirrorSquarePos[] =
     {
         -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,// Left  
          0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,// Right 
-         0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f,// Top   
+         0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f,// Top 
+
+        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,// Left  
+         0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,// Right 
+         0.0f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f,// Top  
     };
 
     GLfloat squarePos[] =
@@ -194,6 +200,25 @@ GLfloat mirrorSquarePos[] =
      1.0f, -1.0f,  1.0f
 };
 
+GLfloat tetraPos[] =
+{
+    1.0f, 0.0f, -0.7071067811865475f,
+    -1.0f, 0.0f, -0.7071067811865475f,
+    0.0f, 1.0f, 0.7071067811865475f,
+
+    0.0f, -1.0f, 0.7071067811865475f,
+    1.0f, 0.0f, -0.7071067811865475f,
+    -1.0f, 0.0f, -0.7071067811865475f,
+
+    -1.0f, 0.0f, -0.7071067811865475f,
+    0.0f, 1.0f, 0.7071067811865475f,
+    0.0f, -1.0f, 0.7071067811865475f,
+
+    1.0f, 0.0f, -0.7071067811865475f,
+    0.0f, 1.0f, 0.7071067811865475f,
+    0.0f, -1.0f, 0.7071067811865475f,
+};
+
 void genSquareBuf(GLuint &vbo, GLuint &vao, GLfloat *pos, GLsizeiptr size)
 {
     GLuint vertexLocation = 0;
@@ -305,6 +330,24 @@ void genSkyboxBuf(GLuint &vbo, GLuint &vao, GLfloat *pos, GLsizeiptr size)
     glBindVertexArray(0);
 }
 
+void genTetraBuf(GLuint &vbo, GLuint &vao, GLfloat *pos, GLsizeiptr size)
+{
+    GLuint vertexLocation = 0;
+
+    glGenBuffers(1, &vbo);                                                        GL_CHECK_ERRORS;
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);                                           GL_CHECK_ERRORS;
+    glBufferData(GL_ARRAY_BUFFER, size, 0, GL_STATIC_DRAW);                       GL_CHECK_ERRORS;
+    glBufferSubData(GL_ARRAY_BUFFER, 0, size, pos);
+
+    glGenVertexArrays(1, &vao);                                                   GL_CHECK_ERRORS;
+    glBindVertexArray(vao);                                                       GL_CHECK_ERRORS;
+
+    glVertexAttribPointer(vertexLocation, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0); 
+    glEnableVertexAttribArray(vertexLocation);  
+
+    glBindVertexArray(0);
+}
+
 void cleanBuffers()
 {
     glDeleteVertexArrays(1, &squareVAO);
@@ -321,4 +364,7 @@ void cleanBuffers()
 
     glDeleteVertexArrays(1, &skyboxVAO);
     glDeleteBuffers(1,      &skyboxVBO);
+
+    glDeleteVertexArrays(1, &tetraVAO);
+    glDeleteBuffers(1,      &tetraVBO);
 }

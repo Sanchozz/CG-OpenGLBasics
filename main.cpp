@@ -19,6 +19,12 @@
 static const GLsizei WIDTH = 640, HEIGHT = 480; //размеры окна
 
 int curScene = 1;
+static bool keys[512];
+GLfloat last_time = 0.0f;
+glm::vec3 shift;
+GLfloat start_pos = 0.0f;
+GLfloat sign = 1.0f;
+GLfloat border = 1.5f;
 
 int initGL()
 {
@@ -38,7 +44,44 @@ int initGL()
     return 0;
 }
 
-void drawScene(GLFWwindow *window, ShaderProgram &program, ShaderProgram &program_texture, glm::mat4 view, glm::mat4 projection, GLuint texture)
+static void keyboardPress(GLFWwindow* window, int key, int scancode, int action, int mode) {
+    switch (key) {
+        case GLFW_KEY_ESCAPE:
+            if (action == GLFW_PRESS) {
+			    glfwSetWindowShouldClose(window, GL_TRUE);
+            }
+            break;
+        case GLFW_KEY_1:
+            if (action == GLFW_PRESS) {
+                if (!keys[key]) {
+                    keys[key] = true;
+                    curScene = 1;
+                } 
+            } else if (action == GLFW_RELEASE) {
+			    keys[key] = false;
+            }
+            break;
+        case GLFW_KEY_2:
+            if (action == GLFW_PRESS) {
+                if (!keys[key]) {
+                    keys[key] = true;
+                    curScene = 2;
+                } 
+            } else if (action == GLFW_RELEASE) {
+			    keys[key] = false;
+            }
+            break;
+        default:
+            if (action == GLFW_PRESS) {
+			    keys[key] = true;
+            } else if (action == GLFW_RELEASE) {
+			    keys[key] = false;
+            }
+            break;
+    }
+}
+
+void drawScene(GLFWwindow *window, ShaderProgram &program, ShaderProgram &program_texture, glm::mat4 view, glm::mat4 projection)
 {
     glm::mat4 model(1.0f);
     program.StartUseShader();                           GL_CHECK_ERRORS;
@@ -96,9 +139,100 @@ void drawScene(GLFWwindow *window, ShaderProgram &program, ShaderProgram &progra
         program_texture.StopUseShader();
 }
 
-void drawScene2(GLFWwindow *window, ShaderProgram &program, ShaderProgram &program_texture, glm::mat4 view, glm::mat4 projection, GLuint texture)
+void drawTransSquare(ShaderProgram &program, glm::mat4 &view, glm::mat4 &projection, GLfloat cur_time, GLfloat shifted, bool isFirst, bool isMirrored, int n)
 {
+    glm::mat4 model(1.0f);
+    model = glm::mat4(1.0f);
+    glBindVertexArray(squareVAO);
+    program.StartUseShader();
+    if (isFirst) {
+        if (std::abs(shift.x) > border) {
+            sign = -1.0 * sign;
+            if (shift.x > border) {
+                start_pos = shift.x - 0.05;
+            } else {
+                start_pos = shift.x + 0.05;
+            }
+            
+            last_time = cur_time;
+        }
+        shift = glm::vec3(start_pos + sign * (cur_time - last_time), 0.0f, shifted);
+        model = glm::translate(model, shift);
+        program.SetUniform("g_view", view);
+        program.SetUniform("g_projection", projection);
+        program.SetUniform("g_model", model);
+        program.SetUniform("g_trans", 0.5f);
+        
+        glDrawArrays(GL_TRIANGLES, 6 * n, 6 * (n + 1));
+    } else {
+        glm::vec3 new_shift = shift;
+        new_shift.z = shifted;
+        if (isMirrored) {
+            new_shift.x *= -1.0f;
+        }
+        model = glm::translate(model, new_shift);
+        program.SetUniform("g_view", view);
+        program.SetUniform("g_projection", projection);
+        program.SetUniform("g_model", model);
+        program.SetUniform("g_trans", 0.3f);
+        
+        glDrawArrays(GL_TRIANGLES, 6 * n, 6 * (n + 1));
+    }
+    program.StopUseShader();
+}
 
+void drawScene2(GLFWwindow *window, 
+                ShaderProgram &program, 
+                ShaderProgram &program_tetra, 
+                glm::mat4 &view, 
+                glm::mat4 &projection)
+{
+    GLfloat cur_time = glfwGetTime();
+    glm::mat4 model(1.0f);
+    model = glm::translate(model, glm::vec3(0.0f, 2.2f, 0.0f));
+    model = glm::rotate(model, glm::radians(cur_time) * 50, glm::vec3(7.0f, 2.0f, 3.0f));
+    glm::vec3 color;
+    glBindVertexArray(tetraVAO);
+    GLfloat k = 1.0f;
+    program_tetra.StartUseShader();
+        for (int i = 0; i < 4; i++) {
+            color = glm::vec3(std::abs(std::sin(cur_time * 0.25 * k)),
+                                 std::abs(std::cos(cur_time* 0.25 * k)), 
+                                 std::abs(std::sin(cur_time * 0.25 * k + 2.0f)));
+            program_tetra.SetUniform("g_view", view);
+            program_tetra.SetUniform("g_projection", projection);
+            program_tetra.SetUniform("g_model", model);
+            program_tetra.SetUniform("g_color", color);
+            glDrawArrays(GL_TRIANGLES, 3 * i, 3 * (i + 1));
+            k *= 1.5f;
+        }
+    program_tetra.StopUseShader();
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    drawTransSquare(program, view, projection, cur_time, 0.0f, true, false, 0);
+    drawTransSquare(program, view, projection, cur_time, 2.0f, false, true, 1);
+    drawTransSquare(program, view, projection, cur_time, 4.0f, false, false, 2);
+    drawTransSquare(program, view, projection, cur_time, 6.0f, false, true, 3);
+    drawTransSquare(program, view, projection, cur_time, 8.0f, false, false, 4);
+
+    glDisable(GL_BLEND);
+}
+
+void drawSkybox(GLFWwindow *window, ShaderProgram &program, glm::mat4 view, glm::mat4 projection)
+{
+    glm::mat4 new_view = glm::mat4(glm::mat3(view));
+    glDepthMask(GL_FALSE);
+    glm::mat4 model(1.0f);
+    program.StartUseShader();
+    glBindVertexArray(skyboxVAO);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+    program.SetUniform("g_model", model);
+    program.SetUniform("g_view", new_view);
+    program.SetUniform("g_projection", projection);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    
+    program.StopUseShader();
+    glDepthMask(GL_TRUE);
 }
 
 void drawMirror(GLFWwindow *window, ShaderProgram &program, glm::mat4 view, glm::mat4 projection, bool isColored)
@@ -106,11 +240,11 @@ void drawMirror(GLFWwindow *window, ShaderProgram &program, glm::mat4 view, glm:
     glm::mat4 model;
     program.StartUseShader();
         if (!isColored) {
-            int width, height;
-            glfwGetFramebufferSize(window, &width, &height);
-            glViewport(0, 0, width, height);
-            glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-            glClear     (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+            // int width, height;
+            // glfwGetFramebufferSize(window, &width, &height);
+            // glViewport(0, 0, width, height);
+            // glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+            // glClear     (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
             glDisable(GL_DEPTH_TEST);
             glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
@@ -161,6 +295,7 @@ int main(int argc, char** argv)
 
     glfwMakeContextCurrent(window); 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    glfwSetKeyCallback(window, keyboardPress); 
 
     if(initGL() != 0) 
         return -1;
@@ -192,6 +327,18 @@ int main(int argc, char** argv)
     shaders_skybox[GL_FRAGMENT_SHADER] = "fragment_skybox.glsl";
     ShaderProgram program_skybox(shaders_skybox); GL_CHECK_ERRORS;
 
+    std::unordered_map<GLenum, std::string> shaders_tetra;
+    shaders_tetra[GL_VERTEX_SHADER] = "vertex_tetra.glsl";
+    shaders_tetra[GL_FRAGMENT_SHADER] = "fragment.glsl";
+    ShaderProgram program_tetra(shaders_tetra); GL_CHECK_ERRORS;
+
+    std::unordered_map<GLenum, std::string> shaders_trans;
+    shaders_trans[GL_VERTEX_SHADER] = "vertex_trans.glsl";
+    shaders_trans[GL_FRAGMENT_SHADER] = "fragment_trans.glsl";
+    ShaderProgram program_trans(shaders_trans); GL_CHECK_ERRORS;
+
+
+
     glfwSwapInterval(1); // force 60 frames per second
   
     //Создаем и загружаем геометрию поверхности
@@ -221,15 +368,20 @@ int main(int argc, char** argv)
     genTriangleBuf(triangleVBO, triangleVAO, trianglePos, sizeof(trianglePos));
     genMirrorBuf(mirrorVBO, mirrorVAO, mirrorSquarePos, sizeof(mirrorSquarePos));GL_CHECK_ERRORS;
     genSkyboxBuf(skyboxVBO, skyboxVAO, skyboxVertices, sizeof(skyboxVertices));GL_CHECK_ERRORS;
+    genTetraBuf(tetraVBO, tetraVAO, tetraPos, sizeof(tetraPos));
 
-    unsigned int cubemapTexture = loadCubemap(faces);
+    cubemapTexture = loadCubemap(faces);
 
     glEnable(GL_DEPTH_TEST);
     //цикл обработки сообщений и отрисовки сцены каждый кадр
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
-
+        int width, height;
+        glfwGetFramebufferSize(window, &width, &height);
+        glViewport(0, 0, width, height);
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        glClear     (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         if (curScene == 1) {
             glm::mat4 model(1.0f);
 
@@ -248,7 +400,7 @@ int main(int argc, char** argv)
             
             glEnable(GL_STENCIL_TEST);
             drawMirror(window, program_mirror, view, projection, false);GL_CHECK_ERRORS;
-            drawScene(window, program, program_texture, reflected_view, projection, ricardoTexture);GL_CHECK_ERRORS;
+            drawScene(window, program, program_texture, reflected_view, projection);GL_CHECK_ERRORS;
             glDisable(GL_STENCIL_TEST);
 
             glEnable(GL_BLEND);
@@ -256,40 +408,21 @@ int main(int argc, char** argv)
             drawMirror(window, program_mirror, view, projection, true);GL_CHECK_ERRORS;
             glDisable(GL_BLEND);GL_CHECK_ERRORS;
 
-            drawScene(window, program, program_texture, view, projection, ricardoTexture);
+            drawScene(window, program, program_texture, view, projection);
             
             glBindVertexArray(0);
         } else if (curScene == 2) {
-
-            int width, height;
-            glfwGetFramebufferSize(window, &width, &height);
-            glViewport(0, 0, width, height);
-            glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-            glClear     (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-            glDepthMask(GL_FALSE);
-            
-            program_skybox.StartUseShader();
-
-            
             glm::mat4 model(1.0f);
 
             glm::mat4 view(1.0f);
-            //view = glm::translate(view, glm::vec3(0.0f, -0.5f, -8.0f));
+            view = glm::translate(view, glm::vec3(0.0f, 0.0f, -9.0f));
             //view = glm::rotate(view, glm::radians(35.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-            //view = glm::mat4(glm::mat3(view));
-
             
+
             glm::mat4 projection(1.0f);
             projection = glm::perspective(45.0f, ((GLfloat) WIDTH) / HEIGHT, 0.1f, 100.0f);
-            glBindVertexArray(skyboxVAO);
-            glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-            program_skybox.SetUniform("g_model", model);
-            program_skybox.SetUniform("g_view", view);
-            program_skybox.SetUniform("g_projection", projection);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-            
-            program_skybox.StopUseShader();
-            glDepthMask(GL_TRUE);
+            drawSkybox(window, program_skybox, view, projection);
+            drawScene2(window, program_trans, program_tetra, view, projection);
             glBindVertexArray(0);
         }
         glfwSwapBuffers(window); 

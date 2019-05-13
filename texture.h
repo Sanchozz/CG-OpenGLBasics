@@ -10,6 +10,7 @@
 
 
 GLuint ricardoTexture;
+GLuint cubemapTexture;
 
 std::vector<std::string> faces = {
     "majesty_rt.tga",
