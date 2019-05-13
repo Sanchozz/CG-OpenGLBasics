@@ -21,6 +21,9 @@ static const GLsizei WIDTH = 640, HEIGHT = 480; //размеры окна
 int curScene = 1;
 static bool keys[512];
 GLfloat last_time = 0.0f;
+GLfloat cur_time;
+GLfloat rel_time;
+GLfloat switch_time = 0.0f;
 glm::vec3 shift;
 GLfloat start_pos = 0.0f;
 GLfloat sign = 1.0f;
@@ -55,7 +58,15 @@ static void keyboardPress(GLFWwindow* window, int key, int scancode, int action,
             if (action == GLFW_PRESS) {
                 if (!keys[key]) {
                     keys[key] = true;
+                    if (curScene != 1) {
+                        switch_time = cur_time;
+                        shift = glm::vec3();
+                        start_pos = 0.0f;
+                        last_time = 0.0f;
+                        sign = 1.0f;
+                    }
                     curScene = 1;
+                    
                 } 
             } else if (action == GLFW_RELEASE) {
 			    keys[key] = false;
@@ -65,6 +76,9 @@ static void keyboardPress(GLFWwindow* window, int key, int scancode, int action,
             if (action == GLFW_PRESS) {
                 if (!keys[key]) {
                     keys[key] = true;
+                    if (curScene != 2) {
+                        switch_time = cur_time;
+                    }
                     curScene = 2;
                 } 
             } else if (action == GLFW_RELEASE) {
@@ -85,8 +99,8 @@ void drawScene(GLFWwindow *window, ShaderProgram &program, ShaderProgram &progra
 {
     glm::mat4 model(1.0f);
     program.StartUseShader();                           GL_CHECK_ERRORS;
-
-        GLfloat cur_time = glfwGetTime();
+        cur_time = glfwGetTime();
+        rel_time = cur_time - switch_time;
 
         program.SetUniform("g_view", view);
         program.SetUniform("g_projection", projection);
@@ -97,10 +111,10 @@ void drawScene(GLFWwindow *window, ShaderProgram &program, ShaderProgram &progra
 
         for (int i = 0; i < 6; i++) {
             model = glm::mat4(1.0f);
-            model = glm::rotate(model, glm::radians(30.0f) + glm::radians(60.0f * i) - glm::radians(cur_time) * 100.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+            model = glm::rotate(model, glm::radians(30.0f) + glm::radians(60.0f * i) - glm::radians(rel_time) * 100.0f, glm::vec3(0.0f, 1.0f, 0.0f));
             model = glm::translate(model, glm::vec3(3.5f, 2.0f, 0.0f));
             model = glm::rotate(model, glm::radians(60.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-            model = glm::rotate(model, glm::radians(cur_time) * 180.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+            model = glm::rotate(model, glm::radians(rel_time) * 180.0f, glm::vec3(0.0f, 0.0f, 1.0f));
             model = glm::scale(model, glm::vec3(0.75, 0.75, 0.75));
             program.SetUniform("g_model", model);
             glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -109,10 +123,10 @@ void drawScene(GLFWwindow *window, ShaderProgram &program, ShaderProgram &progra
         glBindVertexArray(squareVAO); GL_CHECK_ERRORS;
         for (int i = 0; i < 6; i++) {
             model = glm::mat4(1.0f);
-            model = glm::rotate(model, glm::radians(60.0f * i) + glm::radians(cur_time) * 100.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+            model = glm::rotate(model, glm::radians(60.0f * i) + glm::radians(rel_time) * 100.0f, glm::vec3(0.0f, 1.0f, 0.0f));
             model = glm::translate(model, glm::vec3(2.0f, 2.0f, 0.0f));
             model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-            model = glm::rotate(model, -glm::radians(cur_time) * 180.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+            model = glm::rotate(model, -glm::radians(rel_time) * 180.0f, glm::vec3(0.0f, 0.0f, 1.0f));
             model = glm::scale(model, glm::vec3(0.75, 0.75, 0.75));
             program.SetUniform("g_model", model);
             //program.SetUniform("outTexture", 0);
@@ -130,7 +144,7 @@ void drawScene(GLFWwindow *window, ShaderProgram &program, ShaderProgram &progra
 
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, 2.0f, 0.0f)); //DELETE
-        model = glm::rotate(model, (GLfloat) glm::radians(cur_time) * 50.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+        model = glm::rotate(model, (GLfloat) glm::radians(rel_time) * 50.0f, glm::vec3(1.0f, 1.0f, 1.0f));
         program_texture.SetUniform("g_view", view);
         program_texture.SetUniform("g_projection", projection);
         program_texture.SetUniform("g_model", model);
@@ -139,7 +153,7 @@ void drawScene(GLFWwindow *window, ShaderProgram &program, ShaderProgram &progra
         program_texture.StopUseShader();
 }
 
-void drawTransSquare(ShaderProgram &program, glm::mat4 &view, glm::mat4 &projection, GLfloat cur_time, GLfloat shifted, bool isFirst, bool isMirrored, int n)
+void drawTransSquare(ShaderProgram &program, glm::mat4 &view, glm::mat4 &projection, GLfloat rel_time, GLfloat shifted, bool isFirst, bool isMirrored, int n)
 {
     glm::mat4 model(1.0f);
     model = glm::mat4(1.0f);
@@ -154,9 +168,9 @@ void drawTransSquare(ShaderProgram &program, glm::mat4 &view, glm::mat4 &project
                 start_pos = shift.x + 0.05;
             }
             
-            last_time = cur_time;
+            last_time = rel_time;
         }
-        shift = glm::vec3(start_pos + sign * (cur_time - last_time), 0.0f, shifted);
+        shift = glm::vec3(start_pos + sign * (rel_time - last_time), 0.0f, shifted);
         model = glm::translate(model, shift);
         program.SetUniform("g_view", view);
         program.SetUniform("g_projection", projection);
@@ -187,18 +201,19 @@ void drawScene2(GLFWwindow *window,
                 glm::mat4 &view, 
                 glm::mat4 &projection)
 {
-    GLfloat cur_time = glfwGetTime();
+    cur_time = glfwGetTime();
+    rel_time = cur_time - switch_time;
     glm::mat4 model(1.0f);
     model = glm::translate(model, glm::vec3(0.0f, 2.2f, 0.0f));
-    model = glm::rotate(model, glm::radians(cur_time) * 50, glm::vec3(7.0f, 2.0f, 3.0f));
+    model = glm::rotate(model, glm::radians(rel_time) * 50, glm::vec3(7.0f, 2.0f, 3.0f));
     glm::vec3 color;
     glBindVertexArray(tetraVAO);
     GLfloat k = 1.0f;
     program_tetra.StartUseShader();
         for (int i = 0; i < 4; i++) {
-            color = glm::vec3(std::abs(std::sin(cur_time * 0.25 * k)),
-                                 std::abs(std::cos(cur_time* 0.25 * k)), 
-                                 std::abs(std::sin(cur_time * 0.25 * k + 2.0f)));
+            color = glm::vec3(std::abs(std::sin(rel_time * 0.25 * k)),
+                                 std::abs(std::cos(rel_time* 0.25 * k)), 
+                                 std::abs(std::sin(rel_time * 0.25 * k + 2.0f)));
             program_tetra.SetUniform("g_view", view);
             program_tetra.SetUniform("g_projection", projection);
             program_tetra.SetUniform("g_model", model);
@@ -209,11 +224,11 @@ void drawScene2(GLFWwindow *window,
     program_tetra.StopUseShader();
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    drawTransSquare(program, view, projection, cur_time, 0.0f, true, false, 0);
-    drawTransSquare(program, view, projection, cur_time, 2.0f, false, true, 1);
-    drawTransSquare(program, view, projection, cur_time, 4.0f, false, false, 2);
-    drawTransSquare(program, view, projection, cur_time, 6.0f, false, true, 3);
-    drawTransSquare(program, view, projection, cur_time, 8.0f, false, false, 4);
+    drawTransSquare(program, view, projection, rel_time, 0.0f, true, false, 0);
+    drawTransSquare(program, view, projection, rel_time, 2.0f, false, true, 1);
+    drawTransSquare(program, view, projection, rel_time, 4.0f, false, false, 2);
+    drawTransSquare(program, view, projection, rel_time, 6.0f, false, true, 3);
+    drawTransSquare(program, view, projection, rel_time, 8.0f, false, false, 4);
 
     glDisable(GL_BLEND);
 }
